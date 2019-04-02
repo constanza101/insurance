@@ -32,14 +32,14 @@ fs.readFile( connectionData+".json", function (err, data) {
 
 var connection = mysql.createConnection(objServerData);
 
-  //abro la conexión
+  //Open connection
   connection.connect();
   console.log("conectado!");
 
-  //creo mi servidor:
+  //create server:
   var app = express();
 
-  //configuro el server para que parsee el body de las peticiones post
+  //parse JSON responses
   app.use(express.json());
   app.use(express.urlencoded());
   app.use(function(req, res, next) {
@@ -102,6 +102,35 @@ app.get("/user/:policy_id", function(req, res){
           });
       });
   });
+
+
+
+  //POST/login
+  app.post("/login", function(req, res){
+    var email = req.body.email;
+    var id = req.body.id;
+    connection.query("SELECT sha1('"+password+"')"
+          ,function (err, data) {
+            if(err) throw err;
+            var idToCheck = data[0]["id"];
+
+            connection.query("SELECT id, email, role FROM clients WHERE email =('"+email+"');"
+                  ,function (err, data) {
+                    if(err) throw err;
+                    if(data[0] == undefined){
+                      return res.send("wrongEmail")
+                    } else if (idToCheck == data[0].id) {
+                        console.log("contraseña correcta".green);
+                        return res.send(data);
+                        } else{
+                          console.log("contraseña incorrecta".red)
+                          return res.send("wrongPass")
+                      }
+                    });
+            });
+  });//post login
+
+
 
   app.listen(8000, function(){
     console.log("Server is listening in port 8000")
