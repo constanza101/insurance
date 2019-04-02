@@ -20,14 +20,14 @@ var loggedIn = false;
   });
 }
 
-function getClientsBtId(loggedIn, id){
+function getClientBtId(loggedIn, id){
   if (loggedIn == true){
-    getClients()
+    getClient()
   }
 }
 
 
-function getClients(){
+function getClient(){
 var urlCilents = "http://www.mocky.io/v2/5808862710000087232b75ac"
     $.get(urlCilents, function(response) {
         clientsList = response.clients;

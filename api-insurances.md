@@ -4,14 +4,14 @@
 <p> This API of an insurance company allows the following Http requests</p>
 
 
-  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-clients-by-id">Get clients by id</a>
-  * <a href="">Get clients by name</a>
-  * <a href="">Get policies by client name</a>
-  * <a href="">Get clients by policy number</a>
+  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-client-by-id">Get client by id</a>
+  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-client-by-name">Get client by name</a>
+  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-policies-by-client-name">Get policies by client name</a>
+  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-client-by-policy-number">Get client by policy number</a>
 
 
 
-**Get clients by id**
+**Get client by id**
 ----
 Returns all data of a single client.
 
@@ -49,18 +49,18 @@ Returns all data of a single client.
 * **Sample Call:**
 
 ```javascript
-function getClientsbyId(){
+function getclientbyId(){
 var urlCilents = "http://www.mocky.io/v2/5808862710000087232b75ac"
 var id = "a0ece5db-cd14-4f21-812f-966633e7be86"
-var urlClientsById = urlCilents+"/"+id;
+var urlclientById = urlCilents+"/"+id;
     $.get(urlCilents, function(response) {
-        clientsList = response.clients;
-        $("p").append(clientsList)
+        clientslist = response.client;
+        $("p").append(clientslist)
     });
 }
 ```
 
-**Get clients by name**
+**Get client by name**
 ----
 Returns all data of a single client.
 
@@ -98,13 +98,13 @@ Returns all data of a single client.
 * **Sample Call:**
 
 ```javascript
-function getClientsByName(){
+function getclientByName(){
 var urlCilents = "http://www.mocky.io/v2/5808862710000087232b75ac"
 var name = "Britney"
-var urlClientsById = urlCilents+"/"+name;
-    $.get(urlClientsById, function(response) {
-        clientsList = response.clients;
-        $("p").append(clientsList)
+var urlclientById = urlCilents+"/"+name;
+    $.get(urlclientById, function(response) {
+        clientslist = response.client;
+        $("p").append(clientslist)
     });
 }
 ```
@@ -162,7 +162,7 @@ var urlPoliciesByName = urlPolicies+"/"+name;
 ```
 
 
-**Get clients by policy number**
+**Get client by policy number**
 ----
 Returns client owner of a policy number.
 
@@ -200,8 +200,8 @@ Returns client owner of a policy number.
 * **Sample Call:**
 
 ```javascript
-function getClientsByPolicy(){
-var urlClients = "http://www.mocky.io/v2/580891a4100000e8242b75c5"
+function getclientByPolicy(){
+var urlclient = "http://www.mocky.io/v2/580891a4100000e8242b75c5"
 var policy_id = "64cceef9-3a01-49ae-a23b-3761b604800b"
 var urlPoliciesByName = urlCilents+"/"+policy_id;
     $.get(urlPoliciesByName, function(response) {
