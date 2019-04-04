@@ -100,11 +100,11 @@ fs.readFile(connectionData + ".json", function(err, data) {
     app.get("/clientById/:my_id/:client_id", function(req, res) {
         var my_id = req.params.my_id;
         var client_id = req.params.client_id;
-        connection.query("SELECT role FROM clients WHERE id =('" + my_id + "');", function(err, data) {
+        connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
             if (err) throw err;
             var role = data[0];
             if (role == "user" || "admin") {
-                connection.query("SELECT * FROM clients WHERE id =('" + client_id + "');", function(err, data) {
+                connection.query("SELECT * FROM insurance.clients WHERE id =('" + client_id + "');", function(err, data) {
                     if (err) throw err;
                     return res.send(data);
                 });
@@ -119,13 +119,18 @@ fs.readFile(connectionData + ".json", function(err, data) {
     app.get("/clientByName/:my_id/:client_name", function(req, res) {
       var my_id = req.params.my_id;
       var client_name = req.params.client_name;
-      connection.query("SELECT role FROM clients WHERE id =('" + my_id + "');", function(err, data) {
+      connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
           if (err) throw err;
-          var role = data[0];
-          if (role == "user" || "admin") {
-              connection.query("SELECT * FROM clients WHERE name =('" + client_name + "');", function(err, data) {
+          if (data == "") {
+            res.send("Not allowed to make this request - user id does not exist")
+          }
+          else if (data[0]["role"] == "user" || data[0]["role"] == "admin") {
+              connection.query("SELECT * FROM insurance.clients WHERE name =('" + client_name + "');", function(err, data) {
                   if (err) throw err;
-                  return res.send(data);
+                  if (data == "") {
+                    return res.send("Name was not found in clients data base")
+                  }
+                  else {return res.send(data);}
               });
           }
           else {
@@ -139,15 +144,18 @@ fs.readFile(connectionData + ".json", function(err, data) {
     app.get("/policiesByClientName/:my_id/:client_name", function(req, res) {
       var my_id = req.params.my_id;
       var client_name = req.params.client_name;
-      connection.query("SELECT role FROM clients WHERE id =('" + my_id + "');", function(err, data) {
+      connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
           if (err) throw err;
-          var role = data[0];
+          var role = data[0]["role"];
           if (role == "admin") {
-            connection.query("SELECT id FROM clients WHERE name =('" + client_name + "');", function(err, data) {
+            connection.query("SELECT id FROM insurance.clients WHERE name =('" + client_name + "');", function(err, data) {
                 if (err) throw err;
                 var clientId = data[0]["id"];
-                connection.query("SELECT * FROM policies WHERE clientId =('" + clientId + "');", function(err, data) {
+
+                console.log("SELECT * FROM insurance.policies WHERE clientId =('" + clientId + "');");
+                connection.query("SELECT * FROM insurance.policies WHERE clientId =('" + clientId + "');", function(err, data) {
                     if (err) throw err;
+                  //  console.log(data);
                     return res.send(data);
                 });
             });
@@ -158,7 +166,7 @@ fs.readFile(connectionData + ".json", function(err, data) {
       });
     });
 
-    /*• Get the user linked to a policy number
+    /*04- Get the user linked to a policy number
     -> Can be accessed by users with role "admin*/
     app.get("/user/:policy_id", function(req, res) {
         var policy_id = req.params.policy_id;
