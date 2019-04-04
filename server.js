@@ -1,7 +1,8 @@
-var fs = require ("fs");
+var fs = require("fs");
 var express = require("express");
+var colors = require("colors");
 var mysql = require("mysql");
-var connectionData  = process.argv[2]; /*eslint no-undef: "off"*/
+var connectionData = process.argv[2]; /*eslint no-undef: "off"*/
 
 /*
 Endpoint 1:
@@ -26,112 +27,155 @@ http://www.mocky.io/v2/580891a4100000e8242b75c5
       }]}
 */
 
-fs.readFile( connectionData+".json", function (err, data) {
-  if (err) throw err;
-  var objServerData = JSON.parse(data);
+fs.readFile(connectionData + ".json", function(err, data) {
+    if (err) throw err;
+    var objServerData = JSON.parse(data);
+    var connection = mysql.createConnection(objServerData);
 
-var connection = mysql.createConnection(objServerData);
+    //Open connection
+    connection.connect();
+    console.log("conectado!");
 
-  //Open connection
-  connection.connect();
-  console.log("conectado!");
+    //create server:
+    var app = express();
 
-  //create server:
-  var app = express();
+    //parse JSON responses
+    app.use(express.json());
+    app.use(express.urlencoded());
+    app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE");
+        next();
+    });
 
-  //parse JSON responses
-  app.use(express.json());
-  app.use(express.urlencoded());
-  app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE');
-    next();
+
+//POST/clients
+    app.post("/clients", function(req, res){
+      var clients = req.body["clients"]
+
+      for (var i = 0; i < clients.length; i++) {
+         var id = clients[i]["id"]
+         var name = clients[i]["name"]
+         var email = clients[i]["email"]
+         var role = clients[i]["role"]
+      connection.query(
+        "INSERT INTO clients (id, name, email, role) VALUES("
+            +"'"+id+"','"+name+"','"+email+"','"+role+"');"
+        ,function (err, data) {
+            if(err) throw err;
+         });
+      }
+      return res.send("clients saved")
   });
 
-/*-01- Get user data filtered by user id ->
-Can be accessed by users with role "users" and "admin" */
-  app.get("/client/:id", function(req, res){
-    var id = req.params.id;
-    connection.query("SELECT * FROM clients WHERE id =("+id+");"
-      ,function (err, data) {
-        if(err) throw err;
-        return res.send(data);
+  //POST/policies
+      app.post("/policies", function(req, res){
+        var policies = req.body["policies"]
+
+        for (var i = 0; i < policies.length; i++) {
+           var id = policies[i]["id"];
+           var amountInsured = policies[i]["amountInsured"];
+           var email = policies[i]["email"];
+           var inceptionDate = policies[i]["inceptionDate"];
+           var installmentPayment = policies[i]["installmentPayment"];
+           var clientId = policies[i]["clientId"];
+
+        connection.query(
+          "INSERT INTO insurance.policies (id, amountInsured, email, inceptionDate, installmentPayment, clientId) VALUES("
+              +"'"+id+"',"+amountInsured+",'"+email+"','"+inceptionDate+"',"+installmentPayment+",'"+clientId+"');"
+          ,function (err, data) {
+              if(err) throw err;
+           });
+        }
+        return res.send("policies saved")
+    });
+
+
+
+
+    /*-01- Get user data filtered by user id ->
+    Can be accessed by users with role "users" and "admin" */
+    //GET/clientById/:my_id/:client_id;
+    app.get("/clientById/:my_id/:client_id", function(req, res) {
+        var my_id = req.params.my_id;
+        var client_id = req.params.client_id;
+        connection.query("SELECT role FROM clients WHERE id =('" + my_id + "');", function(err, data) {
+            if (err) throw err;
+            var role = data[0];
+            if (role == "user" || "admin") {
+                connection.query("SELECT * FROM clients WHERE id =('" + client_id + "');", function(err, data) {
+                    if (err) throw err;
+                    return res.send(data);
+                });
+            }
+            else {"Not authorized to make this request."
+            }
         });
     });
 
-/*-02-Get user data filtered by user name ->
-Can be accessed by users with role "users" and "admin" */
-app.get("/client/:name", function(req, res){
-  var id = req.params.name;
-  connection.query("SELECT * FROM clients WHERE name =("+name+");"
-    ,function (err, data) {
-      if(err) throw err;
-      return res.send(data);
+    /*-02-Get user data filtered by user name ->
+    Can be accessed by users with role "users" and "admin" */
+    app.get("/clientByName/:my_id/:client_name", function(req, res) {
+      var my_id = req.params.my_id;
+      var client_name = req.params.client_name;
+      connection.query("SELECT role FROM clients WHERE id =('" + my_id + "');", function(err, data) {
+          if (err) throw err;
+          var role = data[0];
+          if (role == "user" || "admin") {
+              connection.query("SELECT * FROM clients WHERE name =('" + client_name + "');", function(err, data) {
+                  if (err) throw err;
+                  return res.send(data);
+              });
+          }
+          else {
+            return res.send("Not authorized to make this request.")
+          }
       });
-  });
+    });
 
-/*-03- Get the list of policies linked to a user name
--> Can be accessed by users with role "admin" */
-app.get("/policies/:name", function(req, res){
-  var name = req.params.name;
-  connection.query("SELECT id FROM clients WHERE name =("+name+");"
-    ,function (err, data) {
-      if(err) throw err;
-      var clientId = data[0]["id"];
-      connection.query("SELECT * FROM policies WHERE clientId =("+clientId+");"
-        ,function (err, data) {
-          if(err) throw err;
-          return res.send(data);
-          });
-      });
-  });
-
-/*• Get the user linked to a policy number
--> Can be accessed by users with role "admin*/
-app.get("/user/:policy_id", function(req, res){
-  var policy_id = req.params.policy_id;
-  connection.query("SELECT clientId FROM policies WHERE id =("+policy_id+");"
-    ,function (err, data) {
-      if(err) throw err;
-      var clientId = data[0]["id"];
-      connection.query("SELECT * FROM policies WHERE clientId =("+clientId+");"
-        ,function (err, data) {
-          if(err) throw err;
-          return res.send(data);
-          });
-      });
-  });
-
-
-
-  //POST/login
-  app.post("/login", function(req, res){
-    var email = req.body.email;
-    var id = req.body.id;
-    connection.query("SELECT sha1('"+password+"')"
-          ,function (err, data) {
-            if(err) throw err;
-            var idToCheck = data[0]["id"];
-
-            connection.query("SELECT id, email, role FROM clients WHERE email =('"+email+"');"
-                  ,function (err, data) {
-                    if(err) throw err;
-                    if(data[0] == undefined){
-                      return res.send("wrongEmail")
-                    } else if (idToCheck == data[0].id) {
-                        console.log("contraseña correcta".green);
-                        return res.send(data);
-                        } else{
-                          console.log("contraseña incorrecta".red)
-                          return res.send("wrongPass")
-                      }
-                    });
+    /*-03- Get the list of policies linked to a user name
+    -> Can be accessed by users with role "admin" */
+    app.get("/policiesByClientName/:my_id/:client_name", function(req, res) {
+      var my_id = req.params.my_id;
+      var client_name = req.params.client_name;
+      connection.query("SELECT role FROM clients WHERE id =('" + my_id + "');", function(err, data) {
+          if (err) throw err;
+          var role = data[0];
+          if (role == "admin") {
+            connection.query("SELECT id FROM clients WHERE name =('" + client_name + "');", function(err, data) {
+                if (err) throw err;
+                var clientId = data[0]["id"];
+                connection.query("SELECT * FROM policies WHERE clientId =('" + clientId + "');", function(err, data) {
+                    if (err) throw err;
+                    return res.send(data);
+                });
             });
-  });//post login
+          }
+          else {
+            return res.send("You are not authorized to make this request.")
+          }
+      });
+    });
+
+    /*• Get the user linked to a policy number
+    -> Can be accessed by users with role "admin*/
+    app.get("/user/:policy_id", function(req, res) {
+        var policy_id = req.params.policy_id;
+        connection.query("SELECT clientId FROM policies WHERE id =(" + policy_id + ");", function(err, data) {
+            if (err) throw err;
+            var clientId = data[0]["id"];
+            connection.query("SELECT * FROM policies WHERE clientId =(" + clientId + ");", function(err, data) {
+				if (err) throw err;
+				return res.send(data);
+            });
+        });
+	});
 
 
 
-  app.listen(8000, function(){
-    console.log("Server is listening in port 8000")
-  })
+
+    app.listen(8000, function() {
+        console.log("Server is listening in port 8000")
+    })
+});
