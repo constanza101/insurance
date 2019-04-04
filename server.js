@@ -102,15 +102,19 @@ fs.readFile(connectionData + ".json", function(err, data) {
         var client_id = req.params.client_id;
         connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
             if (err) throw err;
-            var role = data[0];
-            if (role == "user" || "admin") {
-                connection.query("SELECT * FROM insurance.clients WHERE id =('" + client_id + "');", function(err, data) {
+            if (data == "") {
+              res.send("Not allowed to make this request - user id does not exist")
+            }
+            else if (data[0]["role"] == "user" || data[0]["role"] == "admin") {
+              connection.query("SELECT * FROM insurance.clients WHERE id =('" + client_id + "');", function(err, data) {
                     if (err) throw err;
-                    return res.send(data);
+                    if (data == "") {
+                      return res.send("Client id was not found in clients data base")
+                    }
+                    else {return res.send(data);}
                 });
             }
-            else {"Not authorized to make this request."
-            }
+            else {"Not authorized to make this request."}
         });
     });
 
@@ -138,6 +142,8 @@ fs.readFile(connectionData + ".json", function(err, data) {
           }
       });
     });
+
+
 
     /*-03- Get the list of policies linked to a user name
     -> Can be accessed by users with role "admin" */

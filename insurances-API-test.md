@@ -43,15 +43,36 @@ Making use of Node's libraries "File System" and "Process", we can access to the
 HTTP requests:
 * 01- Get user data filtered by user id ->
 Can be accessed by users with role "users" and "admin".
+<br><br>
+  * Based on the data given at the endpoints I am using 2 params for authentication and request:<br>
+    1: "my_id" will be the client id who is making the request. <br>
+    2: "client_id" will be the id of the client of whom we want to get all the details.<br><br>
+  * The first request will verify the ID of the user making the request ("my_id"). If it exists in the database, it will return their "role".
+  (If we knew that "role" only has 2 options: "admin" and "user", and that they are "not null", technically we would not need to verify the "role" in order to make the next request, but I consider that it is safer to  do it in case we want to add other "roles" in the future)<br><br>
+  * If "role" is "user" or "admin" they are allowed to request the client's data by the "client_id".If the "client_id" is not found in the database it returns a "not found" message, else it returns the data of the client requested.
+
+  * Final "else" in case that "role" is not "user" or "admin".
 
 ```javascript
 
-  app.get("/client/:id", function(req, res){
-    var id = req.params.id;
-    connection.query("SELECT * FROM clients WHERE id =("+id+");"
-      ,function (err, data) {
-        if(err) throw err;
-        return res.send(data);
-        });
+app.get("/clientById/:my_id/:client_id", function(req, res) {
+    var my_id = req.params.my_id;
+    var client_id = req.params.client_id;
+    connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
+        if (err) throw err;
+        if (data == "") {
+          res.send("Not allowed to make this request - user id does not exist")
+        }
+        else if (data[0]["role"] == "user" || data[0]["role"] == "admin") {
+          connection.query("SELECT * FROM insurance.clients WHERE id =('" + client_id + "');", function(err, data) {
+                if (err) throw err;
+                if (data == "") {
+                  return res.send("Client id was not found in clients data base")
+                }
+                else {return res.send(data);}
+            });
+        }
+        else {return res.send("Not authorized to make this request.");}
     });
+});
 ```
