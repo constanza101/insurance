@@ -76,3 +76,40 @@ app.get("/clientById/:my_id/:client_id", function(req, res) {
     });
 });
 ```
+
+
+
+  * 02-Get user data filtered by user name -> Can be accessed by users with role "users" and "admin".
+
+    * As in the previous case we will first verify the id of the user making the request.
+
+    * If their "role" is "user" or "admin" they are allowed to request the clients data, by the "client_name".
+
+    * Again, if "my_id" or "client_name" do not exist in the database an "error message" is returned.
+
+
+```javascript
+app.get("/clientByName/:my_id/:client_name", function(req, res) {
+  var my_id = req.params.my_id;
+  var client_name = req.params.client_name;
+  connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
+      if (err) throw err;
+      if (data == "") {
+        res.send("Not allowed to make this request - user id does not exist")
+      }
+      else if (data[0]["role"] == "user" || data[0]["role"] == "admin") {
+          connection.query("SELECT * FROM insurance.clients WHERE name =('" + client_name + "');", function(err, data) {
+              if (err) throw err;
+              if (data == "") {
+                return res.send("Name was not found in clients data base")
+              }
+              else {return res.send(data);}
+          });
+      }
+      else {
+        return res.send("Not authorized to make this request.")
+      }
+  });
+});
+
+```
