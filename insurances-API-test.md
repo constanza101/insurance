@@ -46,9 +46,11 @@ Can be accessed by users with role "users" and "admin".
 <br><br>
   * Based on the data given at the endpoints I am using 2 params for authentication and request:<br>
     1: "my_id" will be the client id who is making the request. <br>
-    2: "client_id" will be the id of the client of whom we want to get all the details.<br><br>
+    2: "client_id" will be the id of the client of whom we want to get all the details.
+
   * The first request will verify the ID of the user making the request ("my_id"). If it exists in the database, it will return their "role".
-  (If we knew that "role" only has 2 options: "admin" and "user", and that they are "not null", technically we would not need to verify the "role" in order to make the next request, but I consider that it is safer to  do it in case we want to add other "roles" in the future)<br><br>
+  (If we knew that "role" only has 2 options: "admin" and "user", and that they are "not null", technically we would not need to verify the "role" in order to make the next request, but I consider that it is safer to  do it in case we want to add other "roles" in the future).
+
   * If "role" is "user" or "admin" they are allowed to request the client's data by the "client_id".If the "client_id" is not found in the database it returns a "not found" message, else it returns the data of the client requested.
 
   * Final "else" in case that "role" is not "user" or "admin".
@@ -112,4 +114,91 @@ app.get("/clientByName/:my_id/:client_name", function(req, res) {
   });
 });
 
+```
+
+
+* 03- Get the list of policies linked to a user name
+-> Can be accessed by users with role "admin".
+
+    * As in the previous cases we will first verify the "my_id" and "role" of the user making the request.
+
+    * If their "role" is "admin" they are allowed to request the clients' id, by the "client_name".
+
+    * Once we have the "clientId" returned, we can request the client's policies.
+
+    * Error messages will be returned if:
+      * "my_id does" not exist.
+      * "client_name" does not exist.
+      * "role" is not "admin".
+      * Client does not have any policies.
+
+
+```javascript
+    app.get("/policiesByClientName/:my_id/:client_name", function(req, res) {
+      var my_id = req.params.my_id;
+      var client_name = req.params.client_name;
+      connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
+          if (err) throw err;
+          if (data == "") {
+            res.send("Not allowed to make this request - user id does not exist")
+          }
+          else if (data[0]["role"] == "admin") {
+            connection.query("SELECT id FROM insurance.clients WHERE name =('" + client_name + "');", function(err, data) {
+                if (err) throw err;
+                if (data == "") {
+                  res.send("Not allowed to make this request - user does not exist")
+                }
+                else{
+                  var clientId = data[0]["id"];
+                  console.log("SELECT * FROM insurance.policies WHERE clientId =('" + clientId + "');");
+                  connection.query("SELECT * FROM insurance.policies WHERE clientId =('" + clientId + "');", function(err, data) {
+                      if (err) throw err;
+                      console.log(data);
+                      if (data == "") {
+                        return res.send(client_name + " does not have any policies")
+                      }
+                      else {return res.send(data);}
+                  });
+                }
+            });
+          }
+          else {
+            return res.send("You are not authorized to make this request.")
+          }
+      });
+    });
+
+```  
+
+* 04- Get the user linked to a policy number
+-> Can be accessed by users with role "admin
+
+```javascript
+/*04- */
+app.get("/clientByPolicy/:my_id/:policy_id", function(req, res) {
+
+    var my_id = req.params.my_id;
+    var policy_id = req.params.policy_id;
+    connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
+        if (err) throw err;
+        if (data == "") {
+          res.send("Not allowed to make this request - user id does not exist")
+        }
+        else if (data[0]["role"] == "admin") {
+          connection.query("SELECT clientId FROM insurance.policies WHERE id =('" + policy_id + "');", function(err, data) {
+              if (err) throw err;
+              if (data == "") {
+                res.send("Not allowed to make this request - policy does not exist")
+              }
+              else{
+                var clientId = data[0]["clientId"];
+                connection.query("SELECT * FROM insurance.clients WHERE id =('" + clientId + "');", function(err, data) {
+                  if (err) throw err;
+                  return res.send(data);
+                }); //SELECT * FROM insurance.clients
+              }//else
+          });//SELECT clientId FROM insurance.policies
+        } //if "role" == "admin"
+    }) //SELECT role from insurance.clients
+}); //app.get()
 ```

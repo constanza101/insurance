@@ -144,7 +144,6 @@ fs.readFile(connectionData + ".json", function(err, data) {
     });
 
 
-
     /*-03- Get the list of policies linked to a user name
     -> Can be accessed by users with role "admin" */
     app.get("/policiesByClientName/:my_id/:client_name", function(req, res) {
@@ -152,18 +151,25 @@ fs.readFile(connectionData + ".json", function(err, data) {
       var client_name = req.params.client_name;
       connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
           if (err) throw err;
-          var role = data[0]["role"];
-          if (role == "admin") {
+          if (data == "") {
+            res.send("Not allowed to make this request - user id does not exist")
+          }
+          else if (data[0]["role"] == "admin") {
             connection.query("SELECT id FROM insurance.clients WHERE name =('" + client_name + "');", function(err, data) {
                 if (err) throw err;
-                var clientId = data[0]["id"];
-
-                console.log("SELECT * FROM insurance.policies WHERE clientId =('" + clientId + "');");
-                connection.query("SELECT * FROM insurance.policies WHERE clientId =('" + clientId + "');", function(err, data) {
-                    if (err) throw err;
-                  //  console.log(data);
-                    return res.send(data);
-                });
+                if (data == "") {
+                  res.send("Not allowed to make this request - user does not exist")
+                }
+                else{
+                  var clientId = data[0]["id"];
+                  connection.query("SELECT * FROM insurance.policies WHERE clientId =('" + clientId + "');", function(err, data) {
+                      if (err) throw err;
+                      if (data == "") {
+                        return res.send(client_name + " does not have any policies")
+                      }
+                      else {return res.send(data);}
+                  });
+                }
             });
           }
           else {
@@ -174,20 +180,32 @@ fs.readFile(connectionData + ".json", function(err, data) {
 
     /*04- Get the user linked to a policy number
     -> Can be accessed by users with role "admin*/
-    app.get("/user/:policy_id", function(req, res) {
+    app.get("/clientByPolicy/:my_id/:policy_id", function(req, res) {
+
+        var my_id = req.params.my_id;
         var policy_id = req.params.policy_id;
-        connection.query("SELECT clientId FROM policies WHERE id =(" + policy_id + ");", function(err, data) {
+        connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
             if (err) throw err;
-            var clientId = data[0]["id"];
-            connection.query("SELECT * FROM policies WHERE clientId =(" + clientId + ");", function(err, data) {
-				if (err) throw err;
-				return res.send(data);
-            });
-        });
-	});
-
-
-
+            if (data == "") {
+              res.send("Not allowed to make this request - user id does not exist")
+            }
+            else if (data[0]["role"] == "admin") {
+              connection.query("SELECT clientId FROM insurance.policies WHERE id =('" + policy_id + "');", function(err, data) {
+                  if (err) throw err;
+                  if (data == "") {
+                    res.send("Not allowed to make this request - policy does not exist")
+                  }
+                  else{
+                    var clientId = data[0]["clientId"];
+                    connection.query("SELECT * FROM insurance.clients WHERE id =('" + clientId + "');", function(err, data) {
+                      if (err) throw err;
+                      return res.send(data);
+                    }); //SELECT * FROM insurance.clients
+                  }//else
+              });//SELECT clientId FROM insurance.policies
+            } //if "role" == "admin"
+        }) //SELECT role from insurance.clients
+    }); //app.get()
 
     app.listen(8000, function() {
         console.log("Server is listening in port 8000")
