@@ -4,10 +4,10 @@
 <p> This API of an insurance company allows the following Http requests</p>
 
 
-  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-client-by-id">Get client by id</a>
-  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-client-by-name">Get client by name</a>
-  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-policies-by-client-name">Get policies by client name</a>
-  * <a href="https://github.com/constanza101/insurance/blob/master/api-insurances.md#get-client-by-policy-number">Get client by policy number</a>
+  * <a href="https://github.com/constanza101/insurance/blob/master/docs/api-insurances.md#get-client-by-id">Get client by id</a>
+  * <a href="https://github.com/constanza101/insurance/blob/master/docs/api-insurances.md#get-client-by-name">Get client by name</a>
+  * <a href="https://github.com/constanza101/insurance/blob/master/docs/api-insurances.md#get-policies-by-client-name">Get policies by client name</a>
+  * <a href="https://github.com/constanza101/insurance/blob/master/docs/api-insurances.md#get-client-by-policy-number">Get client by policy number</a>
 
 
 
@@ -26,6 +26,7 @@
 *  **URL Params** **(Required)**
 
   `my_id=[string]`
+
   `client_id=[string]`
 
 
@@ -80,6 +81,7 @@ var urlclientById = urldb+param1+"/"+my_id+"/"+client_id;
 *  **URL Params** **(Required)**
 
   `my_id=[string]`
+
   `client_name=[string]`
 
 * **Data Params**
@@ -134,6 +136,7 @@ function getClientByName(){
 *  **URL Params** **(Required)**
 
 `my_id=[string]`
+
 `client_name=[string]`
 
 * **Data Params**
@@ -185,11 +188,12 @@ function getPoliciesOfClient(){
 
 * **Method:**
 
-  `GET` 
+  `GET`
 
 *  **URL Params** **(Required)**
 
   `my_id=[string]`
+
   `policy_id=[string]`
 
 * **Data Params**

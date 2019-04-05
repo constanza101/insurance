@@ -9,15 +9,15 @@
 
 With that information, we need to create a Web API that exposes the following services with some added constraints:
 
-* <a href=""> Get user data filtered by user id. </a> -> Can be accessed by users with role "users" and "admin".<a>
+* <a href="https://github.com/constanza101/insurance/blob/master/docs/insurances-API-test.md#01--get-user-data-filtered-by-user-id"> Get user data filtered by user id. </a> -> Can be accessed by users with role "users" and "admin".<a>
 
-* <a href=""> Get user data filtered by user name. </a> -> Can be accessed by users with role "users" and "admin".
+* <a href="https://github.com/constanza101/insurance/blob/master/docs/insurances-API-test.md#02-get-user-data-filtered-by-user-name"> Get user data filtered by user name. </a> -> Can be accessed by users with role "users" and "admin".
 
-* <a href=""> Get the list of policies linked to a user name.  </a> -> Can be accessed by users with role "admin".
+* <a href="https://github.com/constanza101/insurance/blob/master/docs/insurances-API-test.md#03--get-the-list-of-policies-linked-to-a-user-name"> Get the list of policies linked to a user name.  </a> -> Can be accessed by users with role "admin".
 
-* <a href=""> Get the user linked to a policy number.  </a> -> Can be accessed by users with role "admin".
+* <a href="https://github.com/constanza101/insurance/blob/master/docs/insurances-API-test.md#04--get-the-user-linked-to-a-policy-number"> Get the user linked to a policy number.  </a> -> Can be accessed by users with role "admin".
 
-* <a href=""> Documentation. </a>
+* <a href="https://github.com/constanza101/insurance/blob/master/docs/api-insurances.md"> Documentation. </a>
 
 We have the following constraints:
 * REST API should be developed using some node framework (loopback or express)
