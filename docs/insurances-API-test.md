@@ -35,14 +35,16 @@ As our stakeholders are very fussy, here you have some tips:
 
 **API for an insurances company**
 ===
+- Node.js
+- Express.js
+- MySQL 
 
-1. Data Base:
-<br>
+
+1. Data Base:<br>
 Given the tasks and the data shown at the two endpoints provided, I decided to work with a Relational/SQL data base, considering that SQL databases are ideal when the data will not need to be often changed. SQL databases are more consistent than NoSQL.  
 
-2. API.
-<br>
-Using Node.js and its framework Express I made an <a href="">API</a> that allows 4 http "GET" requests :
+2. API.<br>
+Using Node.js and its framework Express I developed an <a href="https://github.com/constanza101/insurance/blob/master/server.js">API</a> that allows 4 http "GET" requests required:
 
 Making use of Node's libraries "File System" and "Process", we can access to the connection data saved in other JS file, this is useful if we are working in 2 databases, for example "localhost" and "remote" databases.
 
