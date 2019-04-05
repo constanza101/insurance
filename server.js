@@ -51,6 +51,7 @@ fs.readFile(connectionData + ".json", function(err, data) {
 
 
 //POST/clients
+//USED for inserting all the clients data provided into my database
     app.post("/clients", function(req, res){
       var clients = req.body["clients"]
 
@@ -70,9 +71,9 @@ fs.readFile(connectionData + ".json", function(err, data) {
   });
 
   //POST/policies
+  //USED for inserting all the policies data provided into my database
       app.post("/policies", function(req, res){
         var policies = req.body["policies"]
-
         for (var i = 0; i < policies.length; i++) {
            var id = policies[i]["id"];
            var amountInsured = policies[i]["amountInsured"];
@@ -80,13 +81,12 @@ fs.readFile(connectionData + ".json", function(err, data) {
            var inceptionDate = policies[i]["inceptionDate"];
            var installmentPayment = policies[i]["installmentPayment"];
            var clientId = policies[i]["clientId"];
-
-        connection.query(
-          "INSERT INTO insurance.policies (id, amountInsured, email, inceptionDate, installmentPayment, clientId) VALUES("
-              +"'"+id+"',"+amountInsured+",'"+email+"','"+inceptionDate+"',"+installmentPayment+",'"+clientId+"');"
-          ,function (err, data) {
-              if(err) throw err;
-           });
+            connection.query(
+              "INSERT INTO insurance.policies (id, amountInsured, email, inceptionDate, installmentPayment, clientId) VALUES("
+                  +"'"+id+"',"+amountInsured+",'"+email+"','"+inceptionDate+"',"+installmentPayment+",'"+clientId+"');"
+              ,function (err, data) {
+                  if(err) throw err;
+               });
         }
         return res.send("policies saved")
     });

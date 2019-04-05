@@ -17,6 +17,9 @@ With that information, we need to create a Web API that exposes the following se
 
 * <a href="https://github.com/constanza101/insurance/blob/master/docs/insurances-API-test.md#04--get-the-user-linked-to-a-policy-number"> Get the user linked to a policy number.  </a> -> Can be accessed by users with role "admin".
 
+* <a href=""> EXTRA "POST" http requests: </a> -> For inserting into my database all the details of both endpoints provided.
+
+
 * <a href="https://github.com/constanza101/insurance/blob/master/docs/api-insurances.md"> Documentation. </a>
 
 We have the following constraints:
@@ -32,8 +35,6 @@ As our stakeholders are very fussy, here you have some tips:
 
 **API for an insurances company**
 ===
-
-
 
 1. Data Base:
 <br>
@@ -224,3 +225,51 @@ app.get("/clientByPolicy/:my_id/:policy_id", function(req, res) {
     }) //SELECT role from insurance.clients
 }); //app.get()
 ```
+
+
+**05- Extra "POST" http requests.**
+----
+
+```javascript
+
+//POST/clients
+//USED for inserting all the clients data provided into my database
+    app.post("/clients", function(req, res){
+      var clients = req.body["clients"]
+
+      for (var i = 0; i < clients.length; i++) {
+         var id = clients[i]["id"]
+         var name = clients[i]["name"]
+         var email = clients[i]["email"]
+         var role = clients[i]["role"]
+      connection.query(
+        "INSERT INTO clients (id, name, email, role) VALUES("
+            +"'"+id+"','"+name+"','"+email+"','"+role+"');"
+        ,function (err, data) {
+            if(err) throw err;
+         });
+      }
+      return res.send("clients saved")
+  });
+
+  //POST/policies
+  //USED for inserting all the policies data provided into my database
+      app.post("/policies", function(req, res){
+        var policies = req.body["policies"]
+        for (var i = 0; i < policies.length; i++) {
+           var id = policies[i]["id"];
+           var amountInsured = policies[i]["amountInsured"];
+           var email = policies[i]["email"];
+           var inceptionDate = policies[i]["inceptionDate"];
+           var installmentPayment = policies[i]["installmentPayment"];
+           var clientId = policies[i]["clientId"];
+            connection.query(
+              "INSERT INTO insurance.policies (id, amountInsured, email, inceptionDate, installmentPayment, clientId) VALUES("
+                  +"'"+id+"',"+amountInsured+",'"+email+"','"+inceptionDate+"',"+installmentPayment+",'"+clientId+"');"
+              ,function (err, data) {
+                  if(err) throw err;
+               });
+        }
+        return res.send("policies saved")
+    });
+``` 
