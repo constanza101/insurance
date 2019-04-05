@@ -17,7 +17,7 @@ With that information, we need to create a Web API that exposes the following se
 
 * <a href="https://github.com/constanza101/insurance/blob/master/docs/insurances-API-test.md#04--get-the-user-linked-to-a-policy-number"> Get the user linked to a policy number.  </a> -> Can be accessed by users with role "admin".
 
-* <a href=""> EXTRA "POST" http requests: </a> -> For inserting into my database all the details of both endpoints provided.
+* <a href="https://github.com/constanza101/insurance/blob/master/docs/insurances-API-test.md#05--extra-post-http-requests"> EXTRA "POST" http requests: </a> -> For inserting into my database all the details of both endpoints provided.
 
 
 * <a href="https://github.com/constanza101/insurance/blob/master/docs/api-insurances.md"> Documentation. </a>
@@ -272,4 +272,4 @@ app.get("/clientByPolicy/:my_id/:policy_id", function(req, res) {
         }
         return res.send("policies saved")
     });
-``` 
+```
