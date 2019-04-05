@@ -185,7 +185,7 @@ function getPoliciesOfClient(){
 
 * **Method:**
 
-  `GET`
+  `GET` 
 
 *  **URL Params** **(Required)**
 

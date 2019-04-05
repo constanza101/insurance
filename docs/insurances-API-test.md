@@ -46,7 +46,9 @@ Using Node.js and its framework Express I made an <a href="">API</a> that allows
 Making use of Node's libraries "File System" and "Process", we can access to the connection data saved in other JS file, this is useful if we are working in 2 databases, for example "localhost" and "remote" databases.
 
 HTTP requests:
-* 01- Get user data filtered by user id ->
+
+**01- Get user data filtered by user id.**
+----
 Can be accessed by users with role "users" and "admin".
 <br><br>
   * Based on the data given at the endpoints I am using 2 params for authentication and request:<br>
@@ -85,14 +87,16 @@ app.get("/clientById/:my_id/:client_id", function(req, res) {
 ```
 
 
+**02-Get user data filtered by user name.**
+----
 
-  * 02-Get user data filtered by user name -> Can be accessed by users with role "users" and "admin".
+Can be accessed by users with role "user" and "admin".
 
-    * As in the previous case we will first verify the id of the user making the request.
+*  As in the previous case we will first verify the id of the user making the request.
 
-    * If their "role" is "user" or "admin" they are allowed to request the clients data, by the "client_name".
+* If their "role" is "user" or "admin" they are allowed to request the clients data, by the "client_name".
 
-    * Again, if "my_id" or "client_name" do not exist in the database an "error message" is returned.
+* Again, if "my_id" or "client_name" do not exist in the database an "error message" is returned.
 
 
 ```javascript
@@ -122,14 +126,15 @@ app.get("/clientByName/:my_id/:client_name", function(req, res) {
 ```
 
 
-* 03- Get the list of policies linked to a user name
--> Can be accessed by users with role "admin".
+**03- Get the list of policies linked to a user name.**
+----
+Can be accessed by users with role "admin".
 
-    * As in the previous cases we will first verify the "my_id" and "role" of the user making the request.
+* As in the previous cases we will first verify the "my_id" and "role" of the user making the request.
 
-    * If their "role" is "admin" they are allowed to request the clients' id, by the "client_name".
+* If their "role" is "admin" they are allowed to request the clients' id, by the "client_name".
 
-    * Once we have the "clientId" returned, we can request the client's policies.
+* Once we have the "clientId" returned, we can request the client's policies.
 
     * Error messages will be returned if:
       * "my_id" does not exist.
@@ -175,14 +180,16 @@ app.get("/clientByName/:my_id/:client_name", function(req, res) {
 
 ```  
 
-* 04- Get the user linked to a policy number
--> Can be accessed by users with role "admin".
 
-    * As in the previous cases we will first verify the "my_id" and "role" of the user making the request.
+**04- Get the user linked to a policy number.**
+----
+Can be accessed by users with role "admin".
 
-    * If their "role" is "admin" they are allowed to request the clients' id, by the "policy_id".
+  * As in the previous cases we will first verify the "my_id" and "role" of the user making the request.
 
-    * Once we have the "clientId" returned, we can request the client's data by their id.
+  * If their "role" is "admin" they are allowed to request the clients' id, by the "policy_id".
+
+  * Once we have the "clientId" returned, we can request the client's data by their id.
 
     * Error messages will be returned if:
       * "my_id" does not exist.
