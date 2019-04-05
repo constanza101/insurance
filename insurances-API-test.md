@@ -9,10 +9,15 @@
 
 With that information, we need to create a Web API that exposes the following services with some added constraints:
 
-* Get user data filtered by user id -> Can be accessed by users with role "users" and "admin".
-* Get user data filtered by user name -> Can be accessed by users with role "users" and "admin".
-* Get the list of policies linked to a user name -> Can be accessed by users with role "admin".
-* Get the user linked to a policy number -> Can be accessed by users with role "admin".
+* <a href=""> Get user data filtered by user id. </a> -> Can be accessed by users with role "users" and "admin".<a>
+
+* <a href=""> Get user data filtered by user name. </a> -> Can be accessed by users with role "users" and "admin".
+
+* <a href=""> Get the list of policies linked to a user name.  </a> -> Can be accessed by users with role "admin".
+
+* <a href=""> Get the user linked to a policy number.  </a> -> Can be accessed by users with role "admin".
+
+* <a href=""> Documentation. </a>
 
 We have the following constraints:
 * REST API should be developed using some node framework (loopback or express)
@@ -127,7 +132,7 @@ app.get("/clientByName/:my_id/:client_name", function(req, res) {
     * Once we have the "clientId" returned, we can request the client's policies.
 
     * Error messages will be returned if:
-      * "my_id does" not exist.
+      * "my_id" does not exist.
       * "client_name" does not exist.
       * "role" is not "admin".
       * Client does not have any policies.
@@ -171,24 +176,34 @@ app.get("/clientByName/:my_id/:client_name", function(req, res) {
 ```  
 
 * 04- Get the user linked to a policy number
--> Can be accessed by users with role "admin
+-> Can be accessed by users with role "admin".
+
+    * As in the previous cases we will first verify the "my_id" and "role" of the user making the request.
+
+    * If their "role" is "admin" they are allowed to request the clients' id, by the "policy_id".
+
+    * Once we have the "clientId" returned, we can request the client's data by their id.
+
+    * Error messages will be returned if:
+      * "my_id" does not exist.
+      * "client_id" does not exist.
+      * "role" is not "admin".
+      * policy_id is not valid.
 
 ```javascript
-/*04- */
 app.get("/clientByPolicy/:my_id/:policy_id", function(req, res) {
-
     var my_id = req.params.my_id;
     var policy_id = req.params.policy_id;
     connection.query("SELECT role FROM insurance.clients WHERE id =('" + my_id + "');", function(err, data) {
         if (err) throw err;
         if (data == "") {
-          res.send("Not allowed to make this request - user id does not exist")
+          res.send("Not allowed to make this request - client id does not exist")
         }
         else if (data[0]["role"] == "admin") {
           connection.query("SELECT clientId FROM insurance.policies WHERE id =('" + policy_id + "');", function(err, data) {
               if (err) throw err;
               if (data == "") {
-                res.send("Not allowed to make this request - policy does not exist")
+                res.send("Not allowed to make this request - policy id does not exist")
               }
               else{
                 var clientId = data[0]["clientId"];
