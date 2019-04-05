@@ -13,11 +13,11 @@
 
 **Get client by id**
 ----
-Returns all data of a single client.
+01 - Returns all data of a single client.
 
 * **URL**
 
-  /client/:id
+  /clientById/:my_id/:client_id
 
 * **Method:**
 
@@ -25,7 +25,9 @@ Returns all data of a single client.
 
 *  **URL Params** **(Required)**
 
-  `id=[string]`
+  `my_id=[string]`
+  `client_id=[string]`
+
 
 * **Data Params**
 
@@ -33,7 +35,7 @@ Returns all data of a single client.
 
 * **Success Response:**
 
-  * **Code:** 200 <br />
+  * **Code:** 200 <br>
   * **Content:**
 
     `[{  
@@ -50,10 +52,13 @@ Returns all data of a single client.
 
 ```javascript
 function getclientbyId(){
-var urlCilents = "http://www.mocky.io/v2/5808862710000087232b75ac"
-var id = "a0ece5db-cd14-4f21-812f-966633e7be86"
-var urlclientById = urlCilents+"/"+id;
-    $.get(urlCilents, function(response) {
+var urldb = "localhost:8000"
+var param1 = "/clientById"
+var my_id = "a0ece5db-cd14-4f21-812f-966633e7be86"
+var client_id = "a0ece5db-cd14-4f21-812f-966633e7be86"
+var urlclientById = urldb+param1+"/"+my_id+"/"+client_id;
+
+    $.get(urlclientById, function(response) {
         clientslist = response.client;
         $("p").append(clientslist)
     });
@@ -62,11 +67,11 @@ var urlclientById = urlCilents+"/"+id;
 
 **Get client by name**
 ----
-Returns all data of a single client.
+02 - Returns all data of a single client.
 
 * **URL**
 
-  /client/:name
+  /clientByName/:my_id/:client_name
 
 * **Method:**
 
@@ -74,7 +79,8 @@ Returns all data of a single client.
 
 *  **URL Params** **(Required)**
 
-  `name=[string]`
+  `my_id=[string]`
+  `client_name=[string]`
 
 * **Data Params**
 
@@ -82,7 +88,7 @@ Returns all data of a single client.
 
 * **Success Response:**
 
-  * **Code:** 200 <br />
+  * **Code:** 200 <br>
   * **Content:**
 
     `[{  
@@ -98,13 +104,16 @@ Returns all data of a single client.
 * **Sample Call:**
 
 ```javascript
-function getclientByName(){
-var urlCilents = "http://www.mocky.io/v2/5808862710000087232b75ac"
-var name = "Britney"
-var urlclientById = urlCilents+"/"+name;
-    $.get(urlclientById, function(response) {
-        clientslist = response.client;
-        $("p").append(clientslist)
+function getClientByName(){
+  var urlDB = "localhost:8000";
+  var param1 = "/clientByName";
+  var my_id = "a0ece5db-cd14-4f21-812f-966633e7be86";
+  var client_name = "Britney";
+  var urlClientByName = urlDB+param1+"/"+my_id+"/"+client_name;
+
+    $.get(urlClientByName, function(response) {
+        clientsList = response.client;
+        $("p").append(clientsList)
     });
 }
 ```
@@ -112,11 +121,11 @@ var urlclientById = urlCilents+"/"+name;
 
 **Get policies by client name**
 ----
-Returns all policies of a single client.
+03 - Returns all policies of a single client.
 
 * **URL**
 
-  /policies/:name
+  /policiesByClientName/:my_id/:client_name
 
 * **Method:**
 
@@ -124,7 +133,8 @@ Returns all policies of a single client.
 
 *  **URL Params** **(Required)**
 
-  `name=[string]`
+`my_id=[string]`
+`client_name=[string]`
 
 * **Data Params**
 
@@ -151,10 +161,13 @@ Returns all policies of a single client.
 
 ```javascript
 function getPoliciesOfClient(){
-var urlPolicies = "http://www.mocky.io/v2/580891a4100000e8242b75c5"
-var name = "Britney"
-var urlPoliciesByName = urlPolicies+"/"+name;
-    $.get(urlPoliciesByName, function(response) {
+  var urlDB = "localhost:8000";
+  var param1 = "/policiesByClientName";
+  var my_id = "a0ece5db-cd14-4f21-812f-966633e7be86";
+  var client_name = "Britney";
+  var urlPoliciesByClientName = urlDB+param1+"/"+my_id+"/"+client_name;
+
+    $.get(urlPoliciesByClientName, function(response) {
         policiesList = response.policies;
         $("p").append(policiesList)
     });
@@ -164,11 +177,11 @@ var urlPoliciesByName = urlPolicies+"/"+name;
 
 **Get client by policy number**
 ----
-Returns client owner of a policy number.
+04 - Returns client owner of a policy number.
 
 * **URL**
 
-  /user/:policy_id
+  /clientByPolicy/:my_id/:policy_id
 
 * **Method:**
 
@@ -176,6 +189,7 @@ Returns client owner of a policy number.
 
 *  **URL Params** **(Required)**
 
+  `my_id=[string]`
   `policy_id=[string]`
 
 * **Data Params**
@@ -200,11 +214,14 @@ Returns client owner of a policy number.
 * **Sample Call:**
 
 ```javascript
-function getclientByPolicy(){
-var urlclient = "http://www.mocky.io/v2/580891a4100000e8242b75c5"
-var policy_id = "64cceef9-3a01-49ae-a23b-3761b604800b"
-var urlPoliciesByName = urlCilents+"/"+policy_id;
-    $.get(urlPoliciesByName, function(response) {
+function getClientByPolicy(){
+  var urlDB = "localhost:8000";
+  var param1 = "/clientByPolicy";
+  var my_id = "0059ba44-75dc-4f73-9a9f-0e2376909e28";
+  var policy_id = "0039b246-5ffa-4b90-b16f-fc9f2d4033d6";
+  var urlClientByPolicy = urlDB+param1+"/"+my_id+"/"+policy_id;
+
+    $.get(urlClientByPolicy, function(response) {
         policiesList = response.policies;
         $("p").append(policiesList)
     });
